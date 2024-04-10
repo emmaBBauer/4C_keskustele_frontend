@@ -1,0 +1,31 @@
+.container {
+    background-color: #ffbbee;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.avatar {
+    margin: 8px;
+    background-color: #1976d2;
+}
+
+.form {
+    width: 100%;
+    margin-top: 24px;
+}
+
+.submit-btn {
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+.link {
+    text-decoration: none;
+    color: #1976d2;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+
