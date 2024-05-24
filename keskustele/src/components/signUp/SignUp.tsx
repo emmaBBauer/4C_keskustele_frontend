@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,40 +12,83 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import '../styles/signUpStyle.css'
+import '../styles/signUpStyle.css';
+import {useNavigate} from "react-router-dom";
+import {IUser} from "../../common/models/IUser";
+import {useUserContext} from "../../common/context/UserContext";
+import {addUserAPI} from "../../common/api/API_Access_User";
 
-
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+const SignUp: React.FC = () => {
+    const [errorString, setErrorString] = useState<string>("");
+    const navigate = useNavigate();
+    const { user, setUser } = useUserContext();
 
-export default function SignUp() {
-
-    const confirmUser = (data:FormData):boolean => {
-        if(data.get("username") == null)
-        {
-            alert("NO username entered")
+    const confirmUser = (data: FormData): boolean | undefined => {
+        if (data.get("username") === "") {
+            setErrorString("Please enter a username");
+            return false;
+        } else if (data.get("email") === "") {
+            setErrorString("Please enter a valid email");
+            return false;
+        } else if (data.get("password") === "") {
+            setErrorString("Please enter a password");
+            return false;
+        } else if (data.get("passwordAgain") === "") {
+            setErrorString("Please enter the same password again");
             return false;
         }
-        return true;
-    }
+
+        if (isSamePassword(data)) {
+            return true;
+        } else {
+            setErrorString("Not the same password");
+            return false;
+        }
+    };
+
+    const isSamePassword = (data: FormData): boolean | undefined => {
+        return data.get("password") === data.get("passwordAgain");
+    };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        //const isValid = confirmUser(data);
-        const user =
-            {
+        const isValid = confirmUser(data);
+        if (isValid) {
+            setErrorString("");
+            const user:IUser = {
                 id: undefined,
-                username: data.get('username'),
-                email: data.get('email'),
-                password: data.get('password')
-            }
+                username: data.get('username')?.toString(),
+                email: data.get('email')?.toString(),
+                passwort: data.get('password')?.toString()
+            };
+
             console.log(user);
+
+            addUserAPI(false, user)
+                .then(value => setUser(value));
+
+
+
+
             //post
-        // get entweder error oder object und 201
+            // get entweder error oder object und 201
+        }
     };
+
+    const loginCheck = (user:IUser|undefined) => {
+        if(user)
+        {
+            setUser(user);
+            navigate('/homepage');
+        }
+        else {
+            alert("wrong");
+        }
+    }
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -67,7 +110,6 @@ export default function SignUp() {
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-
                             <Grid item xs={12}>
                                 <TextField
                                     required
@@ -100,16 +142,17 @@ export default function SignUp() {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                name="passwordAgain"
-                                label="Enter password again"
-                                type="password"
-                                id="passwordAgain"
-                                autoComplete="new-password"
-                            />
-                        </Grid>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="passwordAgain"
+                                    label="Enter password again"
+                                    type="password"
+                                    id="passwordAgain"
+                                    autoComplete="new-password"
+                                />
+                                <Typography variant="h6">{errorString}</Typography>
+                            </Grid>
                         </Grid>
                         <Button
                             type="submit"
@@ -131,4 +174,6 @@ export default function SignUp() {
             </Container>
         </ThemeProvider>
     );
-}
+};
+
+export default SignUp;

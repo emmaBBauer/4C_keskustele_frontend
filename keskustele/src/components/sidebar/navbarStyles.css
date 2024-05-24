@@ -1,0 +1,53 @@
+.nav-menu {
+    width: 250px; /* Set width of the sidebar */
+    height: 100vh; /* Set full height of the sidebar */
+    background: #000000; /* Sidebar background color */
+    position: fixed; /* Fixed position */
+    top: 0; /* Align to the top */
+    left: -250px; /* Initially hide the sidebar by pushing it off the screen */
+    transition: 350ms; /* Add transition for smooth animation */
+    z-index: 999; /* Set a high z-index to ensure it's above other content */
+
+}
+
+.nav-menu.active {
+    left: 0; /* Show the sidebar by bringing it back to left: 0 */
+}
+
+.nav-menu-items {
+    padding: 0;
+    width: 100%;
+}
+
+.nav-menu-items li {
+    list-style: none;
+}
+
+.nav-menu-items li a {
+    display: flex;
+    color: #fff;
+    text-decoration: none;
+    align-items: center;
+    height: 60px;
+    padding: 0 20px;
+    transition: 0.2s ease;
+}
+
+.nav-menu-items li a:hover {
+    background: #1a1e24;
+}
+
+.menu-bars {
+    margin-left: 2rem;
+    font-size: 2rem;
+    background: none;
+}
+
+body  {
+    background: #ffbbee;
+}
+
+
+.nav-menu.active {
+    right: 0;
+}
