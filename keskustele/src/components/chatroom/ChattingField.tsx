@@ -1,52 +1,93 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import "./chatroomStyles.css";
-import ForwardIcon from '@mui/icons-material/Forward';
-import {IMessage, mockMessages} from "../../common/models/IMessage";
+import { IMessage } from "../../common/models/IMessage";
 import Message from "./Message";
-import {useSubscription} from "react-stomp-hooks";
-import {IChatroom} from "../../common/models/IChatroom";
+import { useStompClient, useSubscription } from "react-stomp-hooks";
+import { useMessageContext } from "../../common/context/MessageContext";
+import { getAllMessagesAPI } from "../../common/api/API_Acess_Message";
+import { useUserContext } from "../../common/context/UserContext";
 
-/**
- * Project: keskusteleFrontend
- * Created by: Emma Bauer
- * Date: 22/05/2024
- * Time: 15:10
- **/
-
-
-interface ChattingFieldProps{
-    chatroom: IChatroom
+interface ChattingFieldProps {
+    chatroomName: string | undefined;
 }
 
-const ChattingField:React.FC<ChattingFieldProps> = ({chatroom}) => {
-    const [messages, setMessages] = useState<IMessage[]>(mockMessages);
+const ChattingField: React.FC<ChattingFieldProps> = ({ chatroomName }) => {
+    const { messages, setMessages } = useMessageContext();
+    const { user } = useUserContext();
+    const [newMessage, setNewMessage] = useState("");
 
-    useSubscription("/chatroom/"+ chatroom.name + "/messages", (message) => {
-        const arr: IMessage[] =  JSON.parse(message.body);
-        setMessages(arr);
-        console.log(arr);
+
+    useEffect(() => {
+        if (!chatroomName) return;
+
+        getAllMessagesAPI(chatroomName, user?.token).then(data => {
+            if (data === undefined) {
+                alert("No messages available");
+            }
+            else
+            {
+                setMessages(data);
+            }
+
+        });
+    }, [user?.token, chatroomName, setMessages]);
+
+    useEffect(() => {
+        console.log("Messages updated:", messages);
+    }, [messages]);
+
+    useSubscription(`/chatroom/${chatroomName}/messages`, (message) => {
+        const incomingMessage: IMessage = JSON.parse(message.body);
+        if (incomingMessage.chatroom?.name === chatroomName) {
+            setMessages( [...messages, incomingMessage]);
+        }
     });
 
+    const sendMessage = async () => {
+        if (!chatroomName || !newMessage.trim()) return;
+
+        const message = { content: newMessage, user: user?.username };
+        try {
+            const response = await fetch(`/post/${chatroomName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                },
+                body: JSON.stringify(message)
+            });
+
+            if (response.ok) {
+                const createdMessage = await response.json();
+                setMessages( [...messages, createdMessage]);
+                setNewMessage("");
+            } else {
+                const errorMessage = await response.text();
+                console.error("Error sending message:", errorMessage);
+                alert("Error sending message: " + errorMessage);
+            }
+        } catch (error) {
+            console.error("Network error:", error);
+        }
+    };
+
     return (
-        <>
-            <div className={"chatContainer"}>
-                <div
-                    style={{
-                        padding: 20,
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 20,
-                    }}
-                >
-                {messages?.map(message => (
-                    <Message key={message.messageId} messageToDisplay={message}/>
-                ))}
-                </div>
+        <div className="chatContainer">
+            <div
+                style={{
+                    padding: 20,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 10,
+                    width: "100%"
+                }}
+            >
+                {messages
+                    .map((message, index) => (
+                        <Message key={`${message.content}-${index}`} messageToDisplay={message} />
+                    ))}
             </div>
-
-
-        </>
-
+        </div>
     );
 };
 

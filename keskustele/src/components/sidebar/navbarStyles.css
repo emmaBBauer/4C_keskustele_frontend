@@ -4,9 +4,10 @@
     background: #000000; /* Sidebar background color */
     position: fixed; /* Fixed position */
     top: 0; /* Align to the top */
-    left: -250px; /* Initially hide the sidebar by pushing it off the screen */
+    left: -300px; /* Initially hide the sidebar by pushing it off the screen */
     transition: 350ms; /* Add transition for smooth animation */
     z-index: 999; /* Set a high z-index to ensure it's above other content */
+    padding: 10px;
 
 }
 
@@ -17,10 +18,15 @@
 .nav-menu-items {
     padding: 0;
     width: 100%;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+
 }
 
 .nav-menu-items li {
     list-style: none;
+
 }
 
 .nav-menu-items li a {
@@ -35,12 +41,14 @@
 
 .nav-menu-items li a:hover {
     background: #1a1e24;
+    border-radius: 8px;
 }
 
 .menu-bars {
-    margin-left: 2rem;
     font-size: 2rem;
     background: none;
+    display: flex;
+    justify-content: end;
 }
 
 body  {

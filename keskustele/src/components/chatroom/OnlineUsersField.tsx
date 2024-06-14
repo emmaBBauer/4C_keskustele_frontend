@@ -1,6 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IUser, mockUsers} from "../../common/models/IUser";
 import UserCOmponent from "./UserCOmponent";
+import {getAllUsersAPI} from "../../common/api/API_Access_User";
+import {useUserContext} from "../../common/context/UserContext";
 
 /**
  * Project: keskusteleFrontend
@@ -15,20 +17,33 @@ interface OnlineUsersField{
 
 const OnlineUsersField = () => {
     const [onlineUsers, setOnlineUsers] = useState<IUser[]>(mockUsers);
+    const {user} = useUserContext();
+
+    useEffect(() => {
+        getAllUsersAPI(user?.token)
+            .then(value => {
+                if(value == undefined)
+                {
+                    alert("no users available")
+                }
+                else{
+                    setOnlineUsers(value);
+                }
+            });
+    }, []);
+
     return (
         <>
             <div className={"onlineUsersContainer"}>
+                <a>All users</a>
+                <div className={"onlineUsersList"}>
+                    {
+                        onlineUsers?.map(value => (
+                            <UserCOmponent key={value.id} user={value}/>
+                        ))
+                    }
 
-                     <ul className={"onlineUsersList"}>
-                         {
-                             onlineUsers?.map(value => (
-                                     <li>
-                                         <UserCOmponent key={value.id} user={value}/>
-                                     </li>
-                             ))
-                         }
-
-                     </ul>
+                </div>
 
 
             </div>

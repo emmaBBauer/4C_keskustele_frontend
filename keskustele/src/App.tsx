@@ -11,37 +11,34 @@ import ChatroomHome from "./components/chatroom/ChatroomHome";
 import {IChatroom} from "./common/models/IChatroom";
 import axios from "axios";
 import {StompSessionProvider} from "react-stomp-hooks";
+import MessageContextProvider from "./common/context/MessageContext";
+import Settings from "./components/Settings";
 
 function App() {
     const [chatrooms, setChatrooms] = useState<IChatroom[]>();
 
-    useEffect(() => {
-        axios.get("http://localhost:42069/chatroom/all")
-            .then(value => setChatrooms(value.data));
-    }, []);
 
     return (
         <div className="App">
-            <StompSessionProvider url={"http://localhost:42069/messages"}>
-            <UserContextProvider>
-                <Router>
-                    <Routes>
-                        <Route path="/" element={<Layout />}>
-                            <Route index element={<SignUp />} />
-                            <Route path="/signup" element={<SignUp />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route element={<HomeLayout  chatrooms={chatrooms}/>}>
-                                <Route path="/homepage" element={<Homepage />} />
-                                    {
-                                        chatrooms?.map(value => (
-                                            <Route key={value.id} path={`/chatroom/${value.id}`} element={<ChatroomHome chatroom={value}/>}/>
-                                        ))
-                                    }
-                                    </Route>
-                        </Route>
-                    </Routes>
-                </Router>
-            </UserContextProvider>
+            <StompSessionProvider url={"ws://localhost:42069/messages"}>
+             <MessageContextProvider>
+                 <UserContextProvider>
+                     <Router>
+                         <Routes>
+                             <Route path="/" element={<Layout />}>
+                                 <Route index element={<SignUp />} />
+                                 <Route path="/signup" element={<SignUp />} />
+                                 <Route path="/login" element={<Login />} />
+                                 <Route element={<HomeLayout/>}>
+                                     <Route path="/homepage" element={<Homepage />} />
+                                     <Route  path={`/chatroom/:name`} element={<ChatroomHome/>}/>
+                                     <Route path={"/settings"} element={<Settings/>}/>
+                                 </Route>
+                             </Route>
+                         </Routes>
+                     </Router>
+                 </UserContextProvider>
+             </MessageContextProvider>
             </StompSessionProvider>
         </div>
     );

@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
-import { IUser } from '../../common/models/IUser';
+import {ILoginUser, IUser} from '../../common/models/IUser';
 import { useUserContext } from '../../common/context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -34,15 +34,11 @@ const SignIn: React.FC = () => {
         const data = new FormData(event.currentTarget);
 
         if (confirmUser(data)) {
-            const u: IUser = {
-                id: undefined,
-                username: undefined,
+            const u: ILoginUser = {
                 email: String(data.get('email')),
-                passwort: String(data.get('password'))
+                password: String(data.get('password'))
             };
-
-            setUser(u);
-
+            console.log("USER");
             console.log(u);
             loginUserAPI(false, u)
                 .then(value => loginCheck(value));
@@ -51,9 +47,12 @@ const SignIn: React.FC = () => {
     };
 
     const loginCheck = (user:IUser|undefined) => {
+        console.log("USER "+ user);
         if(user)
         {
             setUser(user);
+            console.log("USER WITH TOKENS (HOPEFULLY)");
+            console.log(user);
             navigate('/homepage');
         }
         else {
@@ -126,6 +125,8 @@ const SignIn: React.FC = () => {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
+                            onChange={event => handleSubmit}
+                            onSubmit={event => handleSubmit}
                         >
                             Sign In
                         </Button>

@@ -12,7 +12,6 @@ import {IUser} from "../../common/models/IUser";
 
 const Homepage = () => {
     const userContext = useUserContext();
-    {console.log("USERRRRR   " +userContext.user?.passwort)}
     return (
         <div className={"mainTextDiv"}>
             <h1>Please select a chatroom...</h1>

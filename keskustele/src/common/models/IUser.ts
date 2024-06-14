@@ -7,11 +7,24 @@
  * Time: 08:10
  **/
 
+export interface IUserWithoutToken{
+    id: string|undefined,
+    username: string|undefined,
+    email: string|null|undefined,
+    password: string|null|undefined,
+}
+
 export interface IUser{
     id: string|undefined,
     username: string|undefined,
     email: string|null|undefined,
-    passwort: string|null|undefined
+    password: string|null|undefined,
+    token: string|undefined
+}
+
+export interface ILoginUser {
+    email: string,
+    password: string
 }
 
 export const mockUsers: IUser[] = [
@@ -19,30 +32,39 @@ export const mockUsers: IUser[] = [
         id: '1',
         username: 'john_doe ',
         email: 'john@example.com',
-        passwort: 'password123'
+        password: 'password123',
+        token: ""
     },
     {
         id: '2',
         username: 'jane_smith ',
         email: 'jane.smith@example.com',
-        passwort: 'securepass'
+        password: 'securepass',
+        token: ""
+
     },
     {
         id: '3',
         username: 'bob_brown ',
         email: 'bob.brown@example.com',
-        passwort: 'mypassword'
+        password: 'mypassword',
+        token: ""
+
     },
     {
         id: '4',
         username: 'alice_white ',
         email: 'alice.white@example.com',
-        passwort: 'alicepass'
+        password: 'alicepass',
+        token: ""
+
     },
     {
         id: undefined,
         username: undefined,
         email: null,
-        passwort: null
+        password: null,
+        token: ""
+
     }
 ];

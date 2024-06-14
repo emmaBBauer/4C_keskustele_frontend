@@ -1,5 +1,6 @@
 import React from 'react';
 import {IMessage} from "../../common/models/IMessage";
+import "./chatroomStyles.css"
 
 /**
  * Project: keskusteleFrontend
@@ -16,12 +17,10 @@ interface MessageProps{
 
 const Message:React.FC<MessageProps> = ({messageToDisplay}) => {
     return (
-        <div>
-            {messageToDisplay.user.username}:
-            <br/>
-            {messageToDisplay.content}
-            <br/>
-            <br/>
+        <div className="message">
+            <span>{messageToDisplay.author?.username}</span>
+            <span>{messageToDisplay.content}</span>
+
         </div>
     );
 };

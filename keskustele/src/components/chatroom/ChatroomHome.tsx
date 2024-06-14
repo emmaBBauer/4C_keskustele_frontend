@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ChattingField from "./ChattingField";
 import ForwardIcon from "@mui/icons-material/Forward";
 import OnlineUsersField from "./OnlineUsersField";
-import {IMessage, mockMessages} from "../../common/models/IMessage";
-import {mockUsers} from "../../common/models/IUser";
-import {IChatroom} from "../../common/models/IChatroom";
-import {useSubscription} from "react-stomp-hooks";
+import { useStompClient, useSubscription } from "react-stomp-hooks";
+import { useMessageContext } from "../../common/context/MessageContext";
+import { useParams } from "react-router-dom";
+import { useUserContext } from "../../common/context/UserContext";
+import { IMessage } from "../../common/models/IMessage";
 
 /**
  * Project: keskusteleFrontend
@@ -14,56 +15,50 @@ import {useSubscription} from "react-stomp-hooks";
  * Time: 14:30
  **/
 
+function ChatroomHome() {
+    const [textInput, setTextInput] = useState("");
+    const { messages, setMessages } = useMessageContext();
+    const { name: chatroomName } = useParams<{ name: string }>();
+    const { user } = useUserContext();
+    const stompClient = useStompClient();
 
-interface ChatroomHomeProps{
-    chatroom: IChatroom
-}
-
-const ChatroomHome:React.FC<ChatroomHomeProps> = ({chatroom}) => {
-    const [textInput, setTextInput] = useState<string>("");
     const handleOnClick = () => {
-        const m = {
-            //set undefined
-            messageId: `msg${mockMessages.length + 1}`,
-            chatroomId: 'chat2',
-            content: textInput,
-            time: new Date(Date.now()),
-            user: mockUsers[2]
-        };
-        mockMessages.push(m)
-        console.log(m)
-        setTextInput("");
-    }
+        if (textInput.trim() === "") return;
 
-    useSubscription("/chatroom/"+ chatroom.name + "/messages", (message) => {
-        return{
-            //set undefined
-            messageId: `msg${mockMessages.length + 1}`,
-            chatroomId: 'chat2',
+        const newMessage: IMessage = {
+            messageId: undefined,
+            chatroomId: chatroomName || "",
             content: textInput,
-            time: new Date(Date.now()),
-            user: mockUsers[2]
+            time: new Date(),
+            author: user ? user: undefined,
+            chatroom: undefined
         };
-    });
+
+        stompClient?.publish({
+            destination: `/app/post/${chatroomName}`,
+            body: JSON.stringify(newMessage),
+        });
+
+        setMessages([...messages, newMessage]);
+        setTextInput("");
+    };
 
     return (
-        <div className={"pageContainer"}>
-            <ChattingField chatroom={chatroom}/>
-
-            <OnlineUsersField/>
-
-            <div className={"messageContainer"}>
+        <div className="pageContainer">
+            <ChattingField chatroomName={chatroomName}  />
+            <OnlineUsersField />
+            <div className="messageContainer">
                 <input
                     type="text"
                     className="messageInput"
                     placeholder="Enter message"
                     value={textInput}
-                    onChange={(e) => setTextInput(e.target.value)}/>
-
-                <ForwardIcon onClick={handleOnClick}/>
+                    onChange={(e) => setTextInput(e.target.value)}
+                />
+                <ForwardIcon onClick={handleOnClick} />
             </div>
         </div>
     );
-};
+}
 
 export default ChatroomHome;

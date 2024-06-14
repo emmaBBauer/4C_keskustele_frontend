@@ -46,7 +46,8 @@
     border-radius: 16px;
     display: flex;
     padding: 16px;
-    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .userComponentStyles{
@@ -55,5 +56,20 @@
 
 .onlineUsersList{
     list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 16px;
 }
 
+.message {
+    background-color: #ffbbee;
+
+    width: 97.5%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 5px;
+    border-radius: 8px;
+    padding: 8px;
+}

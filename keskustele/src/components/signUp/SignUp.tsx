@@ -14,7 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import '../styles/signUpStyle.css';
 import {useNavigate} from "react-router-dom";
-import {IUser} from "../../common/models/IUser";
+import {IUser, IUserWithoutToken} from "../../common/models/IUser";
 import {useUserContext} from "../../common/context/UserContext";
 import {addUserAPI} from "../../common/api/API_Access_User";
 
@@ -25,7 +25,7 @@ const SignUp: React.FC = () => {
     const navigate = useNavigate();
     const { user, setUser } = useUserContext();
 
-    const confirmUser = (data: FormData): boolean | undefined => {
+     const confirmUser = (data: FormData): boolean | undefined => {
         if (data.get("username") === "") {
             setErrorString("Please enter a username");
             return false;
@@ -59,19 +59,17 @@ const SignUp: React.FC = () => {
         const isValid = confirmUser(data);
         if (isValid) {
             setErrorString("");
-            const user:IUser = {
+            const user:IUserWithoutToken = {
                 id: undefined,
                 username: data.get('username')?.toString(),
                 email: data.get('email')?.toString(),
-                passwort: data.get('password')?.toString()
+                password: data.get('password')?.toString()
             };
 
             console.log(user);
 
-            addUserAPI(false, user)
-                .then(value => setUser(value));
-
-
+            addUserAPI(  user)
+                .then(value => loginCheck(value));
 
 
             //post
@@ -80,10 +78,11 @@ const SignUp: React.FC = () => {
     };
 
     const loginCheck = (user:IUser|undefined) => {
+        console.log("USER "+ user);
         if(user)
         {
             setUser(user);
-            navigate('/homepage');
+            navigate('/login');
         }
         else {
             alert("wrong");

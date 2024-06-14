@@ -2,11 +2,11 @@
 
 .userField {
     width: 240px;
-    //padding: 0 20px;
+    padding: 5px;
     height: 10%;
-    margin-left: 5px;
     background: #ffbbee;
     flex: 1;
+    border-radius: 8px;
 }
 
 .buttonSettings {

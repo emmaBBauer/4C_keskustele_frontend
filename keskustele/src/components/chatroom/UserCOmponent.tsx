@@ -1,5 +1,6 @@
 import React from 'react';
 import {IUser} from "../../common/models/IUser";
+import "./userStyles.css"
 
 /**
  * Project: keskusteleFrontend
