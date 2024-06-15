@@ -34,7 +34,7 @@ export const createNewChatroomAPI = async (body:IChatroom, token?: string):Promi
     };
 
 
-    let res = mockChatrooms.at(0);
+    let res;
 
     axios.request(config)
         .then((response) => {

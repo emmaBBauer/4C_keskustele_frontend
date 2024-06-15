@@ -1,4 +1,4 @@
-import {IUser, mockUsers} from "./IUser";
+import {IUser, IUserWithoutToken, mockUsers} from "./IUser";
 import {IChatroom} from "./IChatroom";
 
 export interface IMessage{
@@ -11,11 +11,11 @@ export interface IMessage{
 }
 
 export interface IMessageWithChatroom{
-    id: number,
+    id: number|undefined,
     content: string,
-    time: string,
-    author: IUser,
-    chatroom: IChatroom
+    time: Date,
+    author: IUserWithoutToken|undefined,
+    chatroom: IChatroom|undefined
 }
 
 

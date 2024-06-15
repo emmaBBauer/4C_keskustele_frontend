@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({ chatrooms }) => {
     const [chatroomss, setChatroomss] = useState<IChatroom[] >(chatrooms ? chatrooms : []);
     const {user} = useUserContext();
 
-    useEffect(() => {
+   useEffect(() => {
         setChatroomss(chatrooms ? chatrooms : []);
     }, [chatrooms]);
 
@@ -66,8 +66,6 @@ const Navbar: React.FC<NavbarProps> = ({ chatrooms }) => {
         createNewChatroomAPI(newChatroom, user?.token)
             .then(value => value ? setChatroomss([...chatroomss, value]) : console.log("did not work"))
             .then(value => alert("Yeyy"));
-
-        //setChatroomss((prevChatrooms) => [...(prevChatrooms || []), newChatroom ]);
     };
 
     return (

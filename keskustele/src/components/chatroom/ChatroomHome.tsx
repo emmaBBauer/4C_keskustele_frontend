@@ -6,7 +6,10 @@ import { useStompClient, useSubscription } from "react-stomp-hooks";
 import { useMessageContext } from "../../common/context/MessageContext";
 import { useParams } from "react-router-dom";
 import { useUserContext } from "../../common/context/UserContext";
-import { IMessage } from "../../common/models/IMessage";
+import {IMessage, IMessageWithChatroom} from "../../common/models/IMessage";
+import {getAllChatrooms} from "../../common/api/API_Access_Chatroom";
+import {IChatroom} from "../../common/models/IChatroom";
+import {IUserWithoutToken} from "../../common/models/IUser";
 
 /**
  * Project: keskusteleFrontend
@@ -21,27 +24,84 @@ function ChatroomHome() {
     const { name: chatroomName } = useParams<{ name: string }>();
     const { user } = useUserContext();
     const stompClient = useStompClient();
+    const [chatrooms, setChatrooms] = useState<IChatroom[]>([]);
+
+
+    const sendMessage = async (newMessage: IMessageWithChatroom) => {
+        if (!chatroomName || !newMessage) return;
+
+        console.log(newMessage);
+
+        try {
+            const response = await fetch(`http://localhost:42069/message/post/${chatroomName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.token}`
+                },
+                body: JSON.stringify(newMessage)
+            });
+
+            if (response.ok) {
+                const createdMessage = await response.json();
+                setMessages( [...messages, createdMessage]);
+            } else {
+                const errorMessage = await response.text();
+                console.error("Error sending message:", errorMessage);
+                alert("Error sending message: " + errorMessage);
+            }
+        } catch (error) {
+            console.error("Network error:", error);
+        }
+    };
+
+
+    const getRightChatroom = (): IChatroom|undefined => {
+        chatrooms.map(c => {
+            if(c.name == chatroomName)
+            {
+                alert(c)
+                return c;
+            }
+        })
+        return chatrooms ? chatrooms.at(0) : undefined;
+    }
 
     const handleOnClick = () => {
         if (textInput.trim() === "") return;
 
-        const newMessage: IMessage = {
-            messageId: undefined,
-            chatroomId: chatroomName || "",
+        getAllChatrooms(user?.token)
+            .then(data => setChatrooms(data));
+
+        let u: IUserWithoutToken = {
+            id: user?.id,
+            username: user?.username,
+            email: user?.email,
+            password: user?.password
+        }
+
+        const newMessage: IMessageWithChatroom = {
+            id: undefined,
             content: textInput,
             time: new Date(),
-            author: user ? user: undefined,
-            chatroom: undefined
+            author: u ? u : undefined,
+            chatroom: getRightChatroom()
         };
 
-        stompClient?.publish({
+        sendMessage(newMessage);
+
+        /*stompClient?.publish({
             destination: `/app/post/${chatroomName}`,
             body: JSON.stringify(newMessage),
         });
 
         setMessages([...messages, newMessage]);
-        setTextInput("");
+        setTextInput("");*/
+
+
     };
+
+
 
     return (
         <div className="pageContainer">

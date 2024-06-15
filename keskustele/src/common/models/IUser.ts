@@ -22,6 +22,13 @@ export interface IUser{
     token: string|undefined
 }
 
+export interface IUserWithoutToken{
+    id: string|undefined,
+    username: string|undefined,
+    email: string|null|undefined,
+    password: string|null|undefined,
+}
+
 export interface ILoginUser {
     email: string,
     password: string
