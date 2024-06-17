@@ -1,15 +1,19 @@
 .home-layout-container {
     display: flex;
+    padding-top: 16px;
+    overflow-x: clip;
+
 }
 
 .navbar {
-    width: 100px;
-    height: 100vh;
+    width: 80px;
+    height: 95vh;
     margin-top: 30px;
 }
 
 .content {
     flex: 1;
+
 }
 
 .mainTextDiv {

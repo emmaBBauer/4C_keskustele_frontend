@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ChattingField from "./ChattingField";
 import ForwardIcon from "@mui/icons-material/Forward";
 import OnlineUsersField from "./OnlineUsersField";
@@ -25,7 +25,19 @@ function ChatroomHome() {
     const { user } = useUserContext();
     const stompClient = useStompClient();
     const [chatrooms, setChatrooms] = useState<IChatroom[]>([]);
+    const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
 
+
+    useEffect(() => {
+        if (chatroomName) {
+            getAllChatrooms(user?.token)
+                .then(data => {
+                    setChatrooms(data);
+                    const chatroom = data.find((c:IChatroom) => c.name.localeCompare(chatroomName) === 0);
+                    setSelectedChatroom(chatroom);
+                });
+        }
+    }, [chatroomName, user?.token]);
 
     const sendMessage = async (newMessage: IMessageWithChatroom) => {
         if (!chatroomName || !newMessage) return;
@@ -55,23 +67,9 @@ function ChatroomHome() {
         }
     };
 
-
-    const getRightChatroom = (): IChatroom|undefined => {
-        chatrooms.map(c => {
-            if(c.name == chatroomName)
-            {
-                alert(c)
-                return c;
-            }
-        })
-        return chatrooms ? chatrooms.at(0) : undefined;
-    }
-
     const handleOnClick = () => {
         if (textInput.trim() === "") return;
 
-        getAllChatrooms(user?.token)
-            .then(data => setChatrooms(data));
 
         let u: IUserWithoutToken = {
             id: user?.id,
@@ -85,10 +83,15 @@ function ChatroomHome() {
             content: textInput,
             time: new Date(),
             author: u ? u : undefined,
-            chatroom: getRightChatroom()
+            chatroom: selectedChatroom
         };
 
+        console.log("New MESSAGE")
+        console.log(newMessage);
+
         sendMessage(newMessage);
+
+        setTextInput("");
 
         /*stompClient?.publish({
             destination: `/app/post/${chatroomName}`,

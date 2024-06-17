@@ -8,7 +8,7 @@ import UserField from "../userField/UserField";
 import { IChatroom } from "../../common/models/IChatroom";
 import CreateChatroomPopup from "./CreateChatroomPopup";
 import Button from "@mui/material/Button";
-import {createNewChatroomAPI} from "../../common/api/API_Access_Chatroom";
+import {createNewChatroomAPI, getAllChatrooms} from "../../common/api/API_Access_Chatroom";
 import {useUserContext} from "../../common/context/UserContext";
 
 interface NavbarProps {
@@ -24,6 +24,9 @@ const Navbar: React.FC<NavbarProps> = ({ chatrooms }) => {
    useEffect(() => {
         setChatroomss(chatrooms ? chatrooms : []);
     }, [chatrooms]);
+
+
+
 
     const handleOpenPopup = () => {
         setPopupOpen(true);
@@ -61,11 +64,15 @@ const Navbar: React.FC<NavbarProps> = ({ chatrooms }) => {
                 password: user?.password
             }
         }
-        console.log("Hellooooo");
-        console.log(newChatroom);
+
         createNewChatroomAPI(newChatroom, user?.token)
-            .then(value => value ? setChatroomss([...chatroomss, value]) : console.log("did not work"))
-            .then(value => alert("Yeyy"));
+            .then(value => value ? setChatroomss([...chatroomss, value]) : console.log("did not work"));
+        handleClosePopup();
+
+        if (user?.token) {
+            getAllChatrooms(user.token)
+                .then(value => setChatroomss(value));
+        }
     };
 
     return (

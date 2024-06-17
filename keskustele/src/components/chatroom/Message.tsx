@@ -19,7 +19,7 @@ const Message:React.FC<MessageProps> = ({messageToDisplay}) => {
     return (
         <div className="message">
             <span>{messageToDisplay.author?.username}</span>
-            <span>{messageToDisplay.content}</span>
+            <span style={{wordBreak: "break-word", textAlign: "start"}}>{messageToDisplay.content}</span>
 
         </div>
     );

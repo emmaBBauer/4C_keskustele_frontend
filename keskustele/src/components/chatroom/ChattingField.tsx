@@ -38,10 +38,16 @@ const ChattingField: React.FC<ChattingFieldProps> = ({ chatroomName }) => {
 
     useSubscription(`/chatroom/${chatroomName}/messages`, (message) => {
         const incomingMessage: IMessage = JSON.parse(message.body);
+        console.log("INCOMING: ")
+        console.log(incomingMessage)
         if (incomingMessage.chatroom?.name === chatroomName) {
             setMessages( [...messages, incomingMessage]);
         }
+        else{
+            alert("hallo")
+        }
     });
+
 
     const sendMessage = async () => {
         if (!chatroomName || !newMessage.trim()) return;
@@ -79,7 +85,12 @@ const ChattingField: React.FC<ChattingFieldProps> = ({ chatroomName }) => {
                     display: "flex",
                     flexDirection: "column",
                     gap: 10,
-                    width: "100%"
+                    width: "100%",
+                    height: "95%",
+                    overflowY: "auto",
+                    overflowX: "hidden"
+
+
                 }}
             >
                 {messages
