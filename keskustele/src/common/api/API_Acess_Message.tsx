@@ -1,7 +1,6 @@
 import axios from "axios";
 import { IMessage } from "../models/IMessage";
 
-const BASE_URL = 'http://localhost:42069/message';
 
 
 export const getAllMessagesAPI = async (chatroomName?: string, token?: string): Promise<IMessage[] | undefined> => {
@@ -15,6 +14,8 @@ export const getAllMessagesAPI = async (chatroomName?: string, token?: string): 
 
             }
         });
+        console.log("response")
+        console.log(response);
         return response.data;
     } catch (error) {
         return undefined;

@@ -15,22 +15,48 @@
 
 }
 
+.messageContainer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.messageContainer.currentUser {
+    justify-content: flex-end;
+}
+
+.messageBox {
+    background-color: #1e293b;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
+.messageBox.currentUser {
+    background-color: lightgreen;
+}
+
+
 .chatContainer {
     height: 90vh;
     width: 100%;
-    background: white;
     border-radius: 16px;
     display: flex;
+    background: #1e293b
 }
 
 .messageContainer {
     height: 100%;
-    background: white;
     border-radius: 16px;
     align-items: center;
     display: flex;
     padding: 0 8px 0 8px;
     overflow-x: clip;
+    background: #1e293b;
+    color: white;
+
 }
 
 .messageInput {
@@ -40,21 +66,28 @@
     font-size: 16px;
     outline: none;
     border-radius: 16px;
+    background: #1e293b;
+    color: white;
+}
+
+*::placeholder{
+    color: white;
 }
 
 .onlineUsersContainer {
     grid-row: span 2 / span 2;
     width: 60%;
-    background: white;
     border-radius: 16px;
     display: flex;
     padding: 16px;
     align-items: center;
     flex-direction: column;
+    background: #1e293b;
 }
 
 .userComponentStyles{
     display: flex;
+    background: white;
 }
 
 .onlineUsersList{
@@ -67,7 +100,7 @@
 }
 
 .message {
-    background-color: #ffbbee;
+    background-color: #334155;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -75,4 +108,5 @@
     gap: 5px;
     border-radius: 8px;
     padding: 8px;
+    color: white;
 }

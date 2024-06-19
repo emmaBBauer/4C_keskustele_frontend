@@ -13,20 +13,21 @@ import axios from "axios";
 import {StompSessionProvider} from "react-stomp-hooks";
 import MessageContextProvider from "./common/context/MessageContext";
 import Settings from "./components/Settings";
+import {ChatroomProvider} from "./common/context/ChatroomContext";
 
 function App() {
-    const [chatrooms, setChatrooms] = useState<IChatroom[]>();
 
 
     return (
         <div className="App">
             <StompSessionProvider url={"ws://localhost:42069/messages"}>
+                <ChatroomProvider>
              <MessageContextProvider>
                  <UserContextProvider>
                      <Router>
                          <Routes>
                              <Route path="/" element={<Layout />}>
-                                 <Route index element={<SignUp />} />
+                                 <Route index element={<SignUp />} />s
                                  <Route path="/signup" element={<SignUp />} />
                                  <Route path="/login" element={<Login />} />
                                  <Route element={<HomeLayout/>}>
@@ -39,6 +40,7 @@ function App() {
                      </Router>
                  </UserContextProvider>
              </MessageContextProvider>
+                </ChatroomProvider>
             </StompSessionProvider>
         </div>
     );

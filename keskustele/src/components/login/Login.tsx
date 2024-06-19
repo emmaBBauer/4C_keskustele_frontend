@@ -9,13 +9,16 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
-import {ILoginUser, IUser} from '../../common/models/IUser';
+import { ILoginUser, IUser } from '../../common/models/IUser';
 import { useUserContext } from '../../common/context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
-import {loginUserAPI} from "../../common/api/API_Access_User";
+import { loginUserAPI } from '../../common/api/API_Access_User';
+import "../signUp/signUpStyles.css";
+
 
 /**
  * Project: keskusteleFrontend
@@ -24,9 +27,11 @@ import {loginUserAPI} from "../../common/api/API_Access_User";
  * Time: 08:18
  **/
 
+
 const SignIn: React.FC = () => {
     const [errorString, setErrorString] = useState<string>('');
-    const { user, setUser } = useUserContext();
+    const [openAlert, setOpenAlert] = useState(false);
+    const { setUser } = useUserContext();
     const navigate = useNavigate();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -38,35 +43,34 @@ const SignIn: React.FC = () => {
                 email: String(data.get('email')),
                 password: String(data.get('password'))
             };
-            console.log("USER");
-            console.log(u);
-            loginUserAPI(false, u)
-                .then(value => loginCheck(value));
 
+            loginUserAPI(false, u)
+                .then(value => loginCheck(value))
+                .catch(() => {
+                    setErrorString('Invalid credentials. Please try again.');
+                    setOpenAlert(true);
+                });
         }
     };
 
-    const loginCheck = (user:IUser|undefined) => {
-        console.log("USER "+ user);
-        if(user)
-        {
+    const loginCheck = (user: IUser | undefined) => {
+        if (user) {
             setUser(user);
-            console.log("USER WITH TOKENS (HOPEFULLY)");
-            console.log(user);
             navigate('/homepage');
-        }
-        else {
-            alert("wrong");
+        } else {
+            setErrorString('Invalid credentials. Please try again.');
+            setOpenAlert(true);
         }
     }
-
 
     const confirmUser = (data: FormData) => {
         if (!data.get('email')) {
             setErrorString('Please enter a valid email');
+            setOpenAlert(true);
             return false;
         } else if (!data.get('password')) {
             setErrorString('Please enter a password');
+            setOpenAlert(true);
             return false;
         } else {
             setErrorString('');
@@ -74,11 +78,14 @@ const SignIn: React.FC = () => {
         }
     };
 
-    const defaultTheme = createTheme();
+    const handleCloseAlert = () => {
+        setOpenAlert(false);
+    };
+
 
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs">
+        <>
+            <Container component="main" maxWidth="xs" className={"container"}>
                 <CssBaseline />
                 <Box
                     sx={{
@@ -88,9 +95,7 @@ const SignIn: React.FC = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                         <LockOutlinedIcon />
-                    </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
@@ -115,18 +120,12 @@ const SignIn: React.FC = () => {
                             id="password"
                             autoComplete="current-password"
                         />
-                        {errorString && (
-                            <Typography color="error" variant="body2">
-                                {errorString}
-                            </Typography>
-                        )}
+
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            onChange={event => handleSubmit}
-                            onSubmit={event => handleSubmit}
                         >
                             Sign In
                         </Button>
@@ -140,7 +139,12 @@ const SignIn: React.FC = () => {
                     </Box>
                 </Box>
             </Container>
-        </ThemeProvider>
+            <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+                <MuiAlert elevation={6} variant="filled" onClose={handleCloseAlert} severity="error">
+                    {errorString}
+                </MuiAlert>
+            </Snackbar>
+        </>
     );
 };
 

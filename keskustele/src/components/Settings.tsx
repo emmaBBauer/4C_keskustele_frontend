@@ -10,11 +10,12 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
-import {IUser, IUserWithoutToken} from "../common/models/IUser";
-import {addUserAPI} from "../common/api/API_Access_User";
-import {useUserContext} from "../common/context/UserContext";
+import {IPatchUser, IUser, IUserWithoutToken} from "../common/models/IUser";
+import {addUserAPI, loginUserAPI, updateUserAPI} from "../common/api/API_Access_User";
+import userContext, {useUserContext} from "../common/context/UserContext";
 import {Label} from "@mui/icons-material";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import {useNavigate} from "react-router-dom";
 
 /**
  * Project: keskusteleFrontend
@@ -25,15 +26,14 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 const defaultTheme = createTheme();
 
-
-
-
-
-
-
 const Settings = () => {
     const [errorString, setErrorString] = useState<string>("");
     const {user, setUser} = useUserContext();
+    const [inputUsername, setInputUsername] = useState<string>(user?.username??"");
+    const [inputEmail, setInputEmail] = useState<string>(user?.email??"");
+    const [inputPassword, setInputPassword] = useState<string>("");
+    const [inputPasswordA, setInputPasswordA] = useState<string>("");
+    const navigate = useNavigate();
 
     const handleOnClick = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -42,23 +42,39 @@ const Settings = () => {
         const isValid = confirmUser(data);
         if (isValid) {
             setErrorString("");
-            const u:IUser = {
-                id: user?.id,
-                token: user?.token,
-                username: data.get('username')?.toString(),
-                email: data.get('email')?.toString(),
-                password: data.get('password')?.toString()
+            const u: IPatchUser = {
+                username: inputUsername,
+                email: inputEmail,
+                password: inputPassword
             };
 
-            setUser(u);
 
-            console.log(u);
+            updateUserAPI(u, user?.id, user?.token)
+                .then((data) => {
+                    const nU = {
+                        id: data?.id,
+                        token: user?.token,
+                        username: u.username,
+                        email: data?.email,
+                        password: data?.password,
+                    }
+                    console.log("SER USER ");
+                    console.log(nU);
+                    setUser(nU);
+                });
 
+            console.log("Passwort: ");
+            console.log(inputPassword)
+            //addUserAPI({id: user?.id, username: user?.username, email: inputEmail, password: inputPassword})
+            //    .then(value => console.log(value));
 
-            //post
-            // get entweder error oder object und 201
+            loginUserAPI(false, {email: inputEmail, password: inputPassword})
+              .then(value => setUser(value));
+
+            setUser(undefined);
+            navigate("/login");
+
         }
-
     }
 
     const isSamePassword = (data: FormData): boolean | undefined => {
@@ -90,8 +106,7 @@ const Settings = () => {
     };
 
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="xs" style={{backgroundColor: "#1e293b", borderRadius: 8}}>
                 <CssBaseline />
                 <Box
                     sx={{
@@ -113,16 +128,20 @@ const Settings = () => {
                                     fullWidth
                                     id="username"
                                     name= "username"
-                                    label={user?.username}
+                                    value={inputUsername}
+                                    label={"username"}
                                     autoComplete="username"
+                                    onChange={(value) => setInputUsername(value.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
                                     id="email"
-                                    label={user?.email}
+                                    label={"email"}
                                     name="email"
+                                    value={inputEmail}
+                                    onChange={(value) => setInputEmail(value.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -132,6 +151,7 @@ const Settings = () => {
                                     type="password"
                                     id="password"
                                     label="New pasword"
+                                    onChange={(value) => setInputPassword(value.target.value)}
                                     autoComplete="new-password"
                                 />
                             </Grid>
@@ -142,6 +162,7 @@ const Settings = () => {
                                     label="Enter new password again"
                                     type="password"
                                     id="passwordAgain"
+                                    onChange={(value) => setInputPasswordA(value.target.value)}
                                     autoComplete="new-password"
                                 />
                                 <Typography variant="h6">{errorString}</Typography>
@@ -158,7 +179,6 @@ const Settings = () => {
                     </Box>
                 </Box>
             </Container>
-        </ThemeProvider>
     );
 };
 

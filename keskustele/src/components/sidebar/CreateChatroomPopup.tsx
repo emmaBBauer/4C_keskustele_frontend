@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { IChatroom } from '../../common/models/IChatroom';
 import { useUserContext } from '../../common/context/UserContext';
+import {useChatroomContext} from "../../common/context/ChatroomContext";
 
 interface CreateChatroomPopupProps {
     open: boolean;
@@ -28,6 +29,7 @@ const CreateChatroomPopup: React.FC<CreateChatroomPopupProps> = ({ open, onClose
     const { user } = useUserContext();
     const [name, setName] = useState('');
     const [picPath, setPicPath] = useState('');
+    const {chatrooms, addChatroom} = useChatroomContext();
 
     const handleCreate = () => {
         if (name.trim() === '') {
@@ -39,10 +41,23 @@ const CreateChatroomPopup: React.FC<CreateChatroomPopupProps> = ({ open, onClose
         onClose();
         setName('');
         setPicPath('');
+
     };
 
+    /*
+          <TextField
+                    margin="dense"
+                    label="Picture URL"
+                    type="text"
+                    fullWidth
+                    value={picPath}
+                    onChange={(e) => setPicPath(e.target.value)}
+                />
+
+     */
+
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose} PaperProps={{style: {backgroundColor: "#1e293b"}}}>
             <DialogTitle>Create New Chatroom</DialogTitle>
             <DialogContent>
                 <TextField
@@ -53,14 +68,6 @@ const CreateChatroomPopup: React.FC<CreateChatroomPopupProps> = ({ open, onClose
                     fullWidth
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                />
-                <TextField
-                    margin="dense"
-                    label="Picture URL"
-                    type="text"
-                    fullWidth
-                    value={picPath}
-                    onChange={(e) => setPicPath(e.target.value)}
                 />
             </DialogContent>
             <DialogActions>

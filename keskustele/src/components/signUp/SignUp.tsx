@@ -11,87 +11,100 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import '../styles/signUpStyle.css';
-import {useNavigate} from "react-router-dom";
-import {IUser, IUserWithoutToken} from "../../common/models/IUser";
-import {useUserContext} from "../../common/context/UserContext";
-import {addUserAPI} from "../../common/api/API_Access_User";
+import { useNavigate } from 'react-router-dom';
+import { IUser, IUserWithoutToken } from '../../common/models/IUser';
+import { useUserContext } from '../../common/context/UserContext';
+import { addUserAPI } from '../../common/api/API_Access_User';
+import "./signUpStyles.css";
 
-const defaultTheme = createTheme();
+
+/**
+ * Project: keskusteleFrontend
+ * Created by: Emma Bauer
+ * Date: 3/04/2024
+ * Time: 08:18
+ **/
+
 
 const SignUp: React.FC = () => {
-    const [errorString, setErrorString] = useState<string>("");
+    const [openAlert, setOpenAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
     const navigate = useNavigate();
-    const { user, setUser } = useUserContext();
+    const { setUser } = useUserContext();
 
-     const confirmUser = (data: FormData): boolean | undefined => {
-        if (data.get("username") === "") {
-            setErrorString("Please enter a username");
-            return false;
-        } else if (data.get("email") === "") {
-            setErrorString("Please enter a valid email");
-            return false;
-        } else if (data.get("password") === "") {
-            setErrorString("Please enter a password");
-            return false;
-        } else if (data.get("passwordAgain") === "") {
-            setErrorString("Please enter the same password again");
-            return false;
+    const confirmUser = (data: FormData): string | true => {
+        if (data.get('username') === '') {
+            return 'Please enter a username';
         }
-
-        if (isSamePassword(data)) {
-            return true;
-        } else {
-            setErrorString("Not the same password");
-            return false;
+        if (data.get('email') === '') {
+            return 'Please enter a valid email';
         }
+        if (data.get('password') === '') {
+            return 'Please enter a password';
+        }
+        if (data.get('passwordAgain') === '') {
+            return 'Please enter the same password again';
+        }
+        if (!isSamePassword(data)) {
+            return 'Passwords do not match';
+        }
+        return true;
     };
 
-    const isSamePassword = (data: FormData): boolean | undefined => {
-        return data.get("password") === data.get("passwordAgain");
+    const isSamePassword = (data: FormData): boolean => {
+        return data.get('password') === data.get('passwordAgain');
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        const isValid = confirmUser(data);
-        if (isValid) {
-            setErrorString("");
-            const user:IUserWithoutToken = {
-                id: undefined,
-                username: data.get('username')?.toString(),
-                email: data.get('email')?.toString(),
-                password: data.get('password')?.toString()
-            };
-
-            console.log(user);
-
-            addUserAPI(  user)
-                .then(value => loginCheck(value));
-
-
-            //post
-            // get entweder error oder object und 201
+        const validationResult = confirmUser(data);
+        if (validationResult === true) {
+            addUserToDatabase(data);
+        } else {
+            setAlertMessage(validationResult);
+            setOpenAlert(true);
         }
     };
 
-    const loginCheck = (user:IUser|undefined) => {
-        console.log("USER "+ user);
-        if(user)
-        {
+    const addUserToDatabase = (data: FormData) => {
+        const user: IUserWithoutToken = {
+            id: undefined,
+            username: data.get('username')?.toString(),
+            email: data.get('email')?.toString(),
+            password: data.get('password')?.toString(),
+        };
+
+        addUserAPI(user)
+            .then((value) => handleAddUserResponse(value))
+            .catch(() => {
+                setAlertMessage('Failed to add user. Please try again.');
+                setOpenAlert(true);
+            });
+    };
+
+    const handleAddUserResponse = (user: IUser | undefined) => {
+        if (user) {
             setUser(user);
             navigate('/login');
+        } else {
+            setAlertMessage('Failed to add user. Please try again.');
+            setOpenAlert(true);
         }
-        else {
-            alert("wrong");
-        }
-    }
+    };
+
+    const handleCloseAlert = () => {
+        setOpenAlert(false);
+    };
 
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs">
+        <>
+
+            <Container component="main" maxWidth="xs" className={"container"}>
                 <CssBaseline />
                 <Box
                     sx={{
@@ -101,16 +114,15 @@ const SignUp: React.FC = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                         <LockOutlinedIcon />
-                    </Avatar>
+                    <br/>
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }} className={"form"}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <TextField
+                                <TextField sx={{input:{color: "white"}}}
                                     required
                                     fullWidth
                                     id="username"
@@ -150,20 +162,14 @@ const SignUp: React.FC = () => {
                                     id="passwordAgain"
                                     autoComplete="new-password"
                                 />
-                                <Typography variant="h6">{errorString}</Typography>
                             </Grid>
                         </Grid>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
+                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} className="submit-buttonn">
                             Sign Up
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="/login" variant="body2">
+                                <Link href="/login" variant="body2" className={"link"}>
                                     Already have an account? Sign in
                                 </Link>
                             </Grid>
@@ -171,7 +177,12 @@ const SignUp: React.FC = () => {
                     </Box>
                 </Box>
             </Container>
-        </ThemeProvider>
+            <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleCloseAlert}>
+                <MuiAlert elevation={6} variant="filled" onClose={handleCloseAlert} severity="error">
+                    {alertMessage}
+                </MuiAlert>
+            </Snackbar>
+        </>
     );
 };
 

@@ -33,21 +33,16 @@ export const createNewChatroomAPI = async (body:IChatroom, token?: string):Promi
         data: body
     };
 
+    try {
+        const response = await axios.request(config);
+        return response.data;
+    } catch (error) {
+        console.error(error)
+    }
 
-    let res;
 
-    axios.request(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-            res = response.data;
-            return response.data;
-        })
-        .catch((error) => {
-            console.log(error);
-            return error;
-        });
 
-    return res;
+
 
 
 }

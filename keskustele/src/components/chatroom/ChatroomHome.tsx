@@ -116,6 +116,7 @@ function ChatroomHome() {
                     className="messageInput"
                     placeholder="Enter message"
                     value={textInput}
+                    style={{color: "white"}}
                     onChange={(e) => setTextInput(e.target.value)}
                 />
                 <ForwardIcon onClick={handleOnClick} />

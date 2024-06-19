@@ -1,18 +1,18 @@
 .nav-menu {
-    width: 250px; /* Set width of the sidebar */
-    height: 100vh; /* Set full height of the sidebar */
-    background: #000000; /* Sidebar background color */
-    position: fixed; /* Fixed position */
-    top: 0; /* Align to the top */
-    left: -300px; /* Initially hide the sidebar by pushing it off the screen */
-    transition: 350ms; /* Add transition for smooth animation */
-    z-index: 999; /* Set a high z-index to ensure it's above other content */
+    width: 250px;
+    height: 100vh;
+    background-color: #020617;
+    position: fixed;
+    top: 0;
+    left: -300px;
+    transition: 350ms;
+    z-index: 999;
     padding: 10px;
 
 }
 
 .nav-menu.active {
-    left: 0; /* Show the sidebar by bringing it back to left: 0 */
+    left: 0;
 }
 
 .nav-menu-items {
@@ -40,7 +40,7 @@
 }
 
 .nav-menu-items li a:hover {
-    background: #1a1e24;
+    background: #1e293b;
     border-radius: 8px;
 }
 
@@ -51,11 +51,13 @@
     justify-content: center;
 }
 
-body  {
-    background: #ffbbee;
-}
-
-
 .nav-menu.active {
     right: 0;
+}
+
+.seperator {
+    height: 5px;
+    width: 100%;
+    background-color: #1e293b;
+    border-radius: 5px;
 }

@@ -88,7 +88,7 @@ const ChattingField: React.FC<ChattingFieldProps> = ({ chatroomName }) => {
                     width: "100%",
                     height: "95%",
                     overflowY: "auto",
-                    overflowX: "hidden"
+                    overflowX: "hidden",
 
 
                 }}

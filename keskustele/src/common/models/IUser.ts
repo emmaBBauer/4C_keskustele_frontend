@@ -22,6 +22,12 @@ export interface IUser{
     token: string|undefined
 }
 
+export interface IPatchUser{
+    username: string|undefined,
+    email: string|null|undefined,
+    password: string|null|undefined,
+}
+
 export interface IUserWithoutToken{
     id: string|undefined,
     username: string|undefined,
@@ -30,8 +36,8 @@ export interface IUserWithoutToken{
 }
 
 export interface ILoginUser {
-    email: string,
-    password: string
+    email: string|null|undefined,
+    password: string|null|undefined
 }
 
 export const mockUsers: IUser[] = [

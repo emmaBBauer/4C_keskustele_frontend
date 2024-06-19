@@ -11,7 +11,7 @@ import Navbar from "../sidebar/Navbar";
 
 const Layout = () => {
     return (
-        <div>
+        <div style={{backgroundColor: "202020"}}>
             <Outlet/>
         </div>
     );

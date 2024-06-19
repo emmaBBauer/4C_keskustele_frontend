@@ -1,0 +1,38 @@
+
+.container {
+    background-color: #334155;
+    padding: 20px;
+    border-radius: 8px; /* Abgerundete Ecken */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Schatten-Effekt */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 100px;
+    color: white;
+}
+
+.avatar {
+    background-color: #1daa61;
+    color: #1daa61
+}
+
+.form {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.submit-buttonn {
+    background-color: #1daa61;
+}
+
+.submit-button:hover {
+    background-color: #0f834c;
+}
+
+.link {
+    color: #1daa61;
+}
+
+.link:hover {
+    color: #0f834c;
+}

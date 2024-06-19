@@ -35,7 +35,7 @@ const OnlineUsersField = () => {
     return (
         <>
             <div className={"onlineUsersContainer"}>
-                <a>All users</a>
+                <a style={{color: "white", fontWeight: "bold"}}>All users</a>
                 <div className={"onlineUsersList"}>
                     {
                         onlineUsers?.map(value => (
